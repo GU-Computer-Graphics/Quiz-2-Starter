@@ -93,10 +93,10 @@
             let height = 2;
             let radialSegments = 16;
 
-            var wheel1 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
-            var wheel2 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
-            var wheel3 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
-            var wheel4 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+            var wheel1Geom = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+            var wheel2Geom = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+            var wheel3Geom = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+            var wheel4Geom = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
 
             //3. Create a mesh for your geometry objects
             //hint: https://threejs.org/docs/#api/en/objects/Mesh
@@ -106,10 +106,10 @@
 
             //3.2 mesh for car wheels        
             //TODO: replace TW.createMesh() with code to use carMeshMaterials instead    
-            carMeshes.wheel1Mesh = TW.createMesh(wheel1);
-            carMeshes.wheel2Mesh = TW.createMesh(wheel2);
-            carMeshes.wheel3Mesh = TW.createMesh(wheel3);
-            carMeshes.wheel4Mesh = TW.createMesh(wheel4);
+            carMeshes.wheel1Mesh = TW.createMesh(wheel1Geom);
+            carMeshes.wheel2Mesh = TW.createMesh(wheel2Geom);
+            carMeshes.wheel3Mesh = TW.createMesh(wheel3Geom);
+            carMeshes.wheel4Mesh = TW.createMesh(wheel4Geom);
 
             //3.3 cylinder requires rotating, sphere does not
             //rotating about the z axis
