@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Quiz 2</title>
+
+    <style>
+        /* feel free to change the canvas style. If you want to use the entire
+      window, set width: 100% and height: 100% */
+        canvas {
+            display: block;
+            margin: 10px auto;
+            width: 80%;
+            height: 500px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+
+    <script src="./js/three.js"> </script>
+    <script src="./js/SceneUtils.js"></script>
+    <script src="./js/OrbitControls.js"></script>
+    <script src="./js/tw.js"></script>
+
+
+    <script>
+        //0. create any global variables used in your scene
+        //car dimensions
+        var carWidth = 20;
+        var carLength = 40;
+        var carHeight = 15;
+
+        //Position of car
+        var carPosition = {
+            x: 0,
+            y: 0,
+            z: 0,
+        }
+
+        //mesh materials used to color car
+        var carMeshMaterials = [
+            new THREE.MeshBasicMaterial({ color: new THREE.Color("red") }),
+            new THREE.MeshBasicMaterial({ color: new THREE.Color("black") }),
+            new THREE.MeshBasicMaterial({ color: new THREE.Color("blue") }),
+            new THREE.MeshBasicMaterial({ color: new THREE.Color("lime") }),
+        ]
+
+        //global object variable to store meshes to add to scene
+        var carMeshes = {};
+
+        //function creates the body geometry of the car and returns the geometry object to calling code
+        //used in createCar()
+        function createCarBody() {
+            //1. Create your geometry object
+            var carGeom = new THREE.Geometry();
+            //vertices
+            carGeom.vertices.push(new THREE.Vector3(0, 0, 0)); //0
+            carGeom.vertices.push(new THREE.Vector3(carWidth, 0, 0)); //1
+            carGeom.vertices.push(new THREE.Vector3(carWidth, carHeight, 0)); //2
+            carGeom.vertices.push(new THREE.Vector3(0, carHeight, 0)); //3
+            carGeom.vertices.push(new THREE.Vector3(carWidth, 0, carLength)); //4        
+            carGeom.vertices.push(new THREE.Vector3(0, 0, carLength)); //5        
+
+            //faces
+            carGeom.faces.push(new THREE.Face3(2, 1, 0)); //side 1 bottom
+            carGeom.faces.push(new THREE.Face3(3, 2, 0)); //side 1 top 
+            carGeom.faces.push(new THREE.Face3(0, 1, 5)); //bottom left
+            carGeom.faces.push(new THREE.Face3(1, 4, 5)); //bottom right
+            carGeom.faces.push(new THREE.Face3(5, 2, 3)); //top left 
+            carGeom.faces.push(new THREE.Face3(5, 4, 2)); //top right
+            carGeom.faces.push(new THREE.Face3(0, 5, 3)); //left side
+            carGeom.faces.push(new THREE.Face3(4, 1, 2)); //right side
+
+            //Calculate normal vectors
+            carGeom.computeFaceNormals();
+
+            return carGeom;
+        }
+
+        //function creates the entire car
+        function createCar(carPosition) {
+            //2. Create your geometry objects
+            var carGeom = createCarBody(); //car body                   
+
+            //Create wheels
+            //see parameters here: https://threejs.org/docs/index.html#api/en/geometries/CylinderGeometry
+
+            let radiusTop = 5;
+            let radiusBottom = 5;
+            let height = 2;
+            let radialSegments = 16;
+
+            var wheel1 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+            var wheel2 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+            var wheel3 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+            var wheel4 = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
+
+            //3. Create a mesh for your geometry objects
+            //hint: https://threejs.org/docs/#api/en/objects/Mesh
+            //TODO: replace TW.createMesh() with code to use carMeshMaterials instead
+            //3.1 mesh for car body
+            carMeshes.carMesh = TW.createMesh(carGeom);
+
+            //3.2 mesh for car wheels        
+            //TODO: replace TW.createMesh() with code to use carMeshMaterials instead    
+            carMeshes.wheel1Mesh = TW.createMesh(wheel1);
+            carMeshes.wheel2Mesh = TW.createMesh(wheel2);
+            carMeshes.wheel3Mesh = TW.createMesh(wheel3);
+            carMeshes.wheel4Mesh = TW.createMesh(wheel4);
+
+            //3.3 cylinder requires rotating, sphere does not
+            //rotating about the z axis
+            carMeshes.wheel1Mesh.rotation.set(0, 0, Math.PI / 2);
+            carMeshes.wheel2Mesh.rotation.set(0, 0, Math.PI / 2);
+            carMeshes.wheel3Mesh.rotation.set(0, 0, Math.PI / 2);
+            carMeshes.wheel4Mesh.rotation.set(0, 0, Math.PI / 2);
+
+            //4. Add the objects to the scene        
+            scene.add(carMeshes.carMesh);
+            scene.add(carMeshes.wheel1Mesh);
+            scene.add(carMeshes.wheel2Mesh);
+            scene.add(carMeshes.wheel3Mesh);
+            scene.add(carMeshes.wheel4Mesh);
+
+            // //4.5 set geometry positions
+            carMeshes.carMesh.position.set(
+                carPosition.x,
+                carPosition.y,
+                carPosition.z); //x,y,z
+
+            carMeshes.wheel1Mesh.position.set(
+                carPosition.x,
+                carPosition.y,
+                carPosition.z + (0.15 * carLength)); //x,y,z
+
+            carMeshes.wheel2Mesh.position.set(
+                carPosition.x,
+                carPosition.y,
+                carPosition.z + (0.65 * carLength)); //x,y,z
+
+            carMeshes.wheel3Mesh.position.set(
+                carPosition.x + carWidth,
+                carPosition.y,
+                carPosition.z + (0.15 * carLength)); //x,y,z
+
+            carMeshes.wheel4Mesh.position.set(
+                carPosition.x + carWidth,
+                carPosition.y,
+                carPosition.z + (0.65 * carLength)); //x,y,z
+        }
+
+        function removeCar() {
+            //TODO: your code here
+        }
+
+        function moveCarFowardZ() {
+            //TODO: your code here
+        }
+
+        function moveCarBackwardZ() {
+            //TODO: your code here
+        }
+
+        function changeCarColor1() {
+            //TODO: your code here
+        }
+
+        function changeCarColor2() {
+            //TODO: your code here
+        }
+
+        function changeCarColor3() {
+            //TODO: your code here
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <h1>A simple (colored) car</h1>
+
+    <script>
+        //1.  Create an initial empty Scene
+        var scene = new THREE.Scene();
+
+        //2. Create car
+        createCar(carPosition);
+
+        //5. Create a renderer to render the scene
+        var renderer = new THREE.WebGLRenderer();
+
+        //6. TW.mainInit() initializes TW, adds the canvas to the document,
+        // enables display of 3D coordinate axes, sets up keyboard controls
+        TW.mainInit(renderer, scene);
+
+        //7. Set up a camera for the scene
+        // bounding box should be set based on the objects being rendered.
+        var state = TW.cameraSetup(renderer,
+            scene,
+            {
+                minx: -carWidth * 2, maxx: carLength * 2,
+                miny: -carWidth * 2, maxy: carWidth * 2,
+                minz: -carWidth * 2, maxz: carWidth * 2
+            });
+
+        //add callback for keybindings
+        //forwardz -- bind to w key
+        //TODO: 
+
+        //backwardz -- bind to s key
+        //TODO: 
+
+        //color1 -- bind to 1 key
+        //TODO: 
+
+        //color2 -- bind to 2 key
+        //TODO: 
+
+        //color3 -- bind to 3 key
+        //TODO: 
+
+        //set axis visible by default
+        state.axisHelper.visible = true;
+        TW.render();
+
+    </script>
+
+    <!-- NOTE: the TW helper script appends a canvas to this HTML document, 
+  we'd need to add one ourselves otherwise! e.g.:-->
+
+    <!-- <canvas width="1433" height="500" style="width: 1433px; height: 500px;"></canvas> -->
+
+</body>
+
+</html>
